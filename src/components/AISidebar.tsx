@@ -1,4 +1,3 @@
-import React from 'react';
 import { AISuggestion } from '../types';
 import { Wand2, Code, X, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

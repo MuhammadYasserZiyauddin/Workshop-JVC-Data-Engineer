@@ -1,14 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { AISuggestion, DataFrameMetadata, VisualizationInsight, NarrativeInsight } from "../types";
 
-const getAI = () => {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (window as any).GEMINI_API_KEY || "";
-  if (!apiKey) {
-    throw new Error("GEMINI_API_KEY is not set.");
-  }
-  return new GoogleGenAI({ apiKey });
-};
-
 export async function getCleaningSuggestions(metadata: DataFrameMetadata, apiKey: string): Promise<AISuggestion[]> {
   const ai = new GoogleGenAI({ apiKey });
   

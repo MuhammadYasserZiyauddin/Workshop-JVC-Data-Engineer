@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import * as dfd from 'danfojs';
-import { Sparkles, RotateCcw, Download, Database, History, Search, Loader2, X, LogOut, Code } from 'lucide-react';
+import { Sparkles, RotateCcw, Download, Database, History, Search, Loader2, X, LogOut } from 'lucide-react';
 import { Dropzone } from './components/Dropzone';
 import { Chart } from './components/Chart';
 import { Stats } from './components/Stats';
@@ -14,7 +14,7 @@ import { auth } from './lib/firebase';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function App() {
-  const [user, authLoading, authError] = useAuthState(auth);
+  const [user, authLoading] = useAuthState(auth);
 
   const [state, setState] = useState<DataState>({
     df: null,
@@ -104,7 +104,6 @@ export default function App() {
       error: null,
     });
     
-    // Initial narrative
     triggerNarrativeUpdate(df);
   }, [triggerNarrativeUpdate]);
 
@@ -126,6 +125,7 @@ export default function App() {
     if (!state.df) return;
 
     try {
+      // @ts-expect-error eval uses this variable
       const df = state.df; 
       const processedDf = eval(suggestion.danfoCode);
 
@@ -146,7 +146,6 @@ export default function App() {
           suggestions: prev.suggestions.filter(s => s.id !== suggestion.id)
         }));
         setSearchState(prev => ({ ...prev, insight: null, query: '' }));
-        // Update narrative when data changes
         triggerNarrativeUpdate(processedDf, currentChartConfig);
       }
     } catch (err) {
@@ -158,7 +157,7 @@ export default function App() {
     setState((prev: any) => {
       if (prev.history.length <= 1) return prev;
       const newHistory = [...prev.history];
-      newHistory.pop(); // remove current state
+      newHistory.pop(); 
       const previousState = newHistory[newHistory.length - 1];
       
       triggerNarrativeUpdate(previousState.dfSnapshot, currentChartConfig);
@@ -190,6 +189,7 @@ export default function App() {
       let viewDf = state.df;
       if (insight.filterCode) {
         try {
+          // @ts-expect-error eval uses this variable
           const df = state.df; 
           const result = eval(insight.filterCode);
           if (result instanceof dfd.DataFrame) {
@@ -256,7 +256,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-sans selection:bg-indigo-100 selection:text-indigo-900 pb-20">
-      {/* Navigation */}
       <nav className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
