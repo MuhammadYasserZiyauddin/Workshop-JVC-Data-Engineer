@@ -53,7 +53,6 @@ export function Chart({ df, title = "Data Visualization", insight, onExportConfi
     }
     displayMeta = insight.insight;
   } else {
-    // Default standard chart
     const numericCols = df.columns.filter((col: string) => {
       const dtype = (df[col] as any).dtype;
       return ['int32', 'float32', 'int64', 'float64'].includes(dtype);
@@ -78,7 +77,6 @@ export function Chart({ df, title = "Data Visualization", insight, onExportConfi
     }
   }
 
-  // Trigger export config capability
   React.useEffect(() => {
     if (onExportConfigChange) {
       onExportConfigChange({ data: plotData, layout });

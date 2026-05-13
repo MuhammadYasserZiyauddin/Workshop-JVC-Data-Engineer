@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import * as dfd from 'danfojs';
-import { Sparkles, RotateCcw, Download, Database, History, Search, Loader2, X, Brain } from 'lucide-react';
+import { Sparkles, RotateCcw, Download, Database, History, Search, Loader2, X, LogOut, Code } from 'lucide-react';
 import { Dropzone } from './components/Dropzone';
 import { Chart } from './components/Chart';
 import { Stats } from './components/Stats';
@@ -9,8 +9,13 @@ import { StoryCard } from './components/StoryCard';
 import { AISuggestion, DataFrameMetadata, DataState, VisualizationInsight, NarrativeInsight } from './types';
 import { getCleaningSuggestions, generateVisualization, generateNarrative } from './lib/gemini';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from './lib/firebase';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export default function App() {
+  const [user, authLoading, authError] = useAuthState(auth);
+
   const [state, setState] = useState<DataState>({
     df: null,
     viewDf: null,
@@ -131,7 +136,7 @@ export default function App() {
           viewDf: processedDf,
           history: [...prev.history, {
             id: Math.random().toString(),
-            description:  `: Applied "${suggestion.label}"`,
+            description: `: Applied "${suggestion.label}"`,
             timestamp: Date.now(),
             dfSnapshot: processedDf.copy()
           }],
@@ -210,6 +215,43 @@ export default function App() {
     }
   };
 
+  const handleLogin = () => {
+    const provider = new GoogleAuthProvider();
+    signInWithPopup(auth, provider);
+  };
+
+  const handleLogout = () => {
+    auth.signOut();
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
+        <Loader2 className="animate-spin text-indigo-500 w-10 h-10" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F5] flex flex-col items-center justify-center p-6">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 mx-auto mb-6">
+            <Sparkles className="text-white" size={32} />
+          </div>
+          <h1 className="text-3xl font-black text-gray-900 mb-2">DATAVIBE</h1>
+          <p className="text-gray-500 mb-8 leading-relaxed">Sign in with your Google account to unlock AI-powered data analysis and visualization.</p>
+          <button
+            onClick={handleLogin}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-colors shadow-sm"
+          >
+            Continue with Google
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
   const activeDf = state.viewDf || state.df;
 
   return (
@@ -224,27 +266,36 @@ export default function App() {
             <span className="text-xl font-black tracking-tight text-gray-900">DATAVIBE</span>
           </div>
           
-          {state.df && (
-            <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-gray-400 hidden sm:inline-block">Vibe Mode</span>
-              <div className="h-4 w-px bg-gray-200 hidden sm:block mx-1"></div>
-              <button
-                onClick={undo}
-                disabled={state.history.length <= 1}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 rounded-lg transition-colors"
-                title="Undo last change"
-              >
-                <RotateCcw size={16} /> <span className="hidden sm:inline">Undo</span>
-              </button>
-              <button
-                onClick={downloadData}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-all shadow-sm active:scale-95 ml-2"
-                title="Download CSV"
-              >
-                <Download size={16} /> <span className="hidden sm:inline">Export CSV</span>
+          <div className="flex items-center gap-3">
+            {state.df && (
+              <>
+                <span className="text-sm font-medium text-gray-400 hidden sm:inline-block">Vibe Mode</span>
+                <div className="h-4 w-px bg-gray-200 mx-1"></div>
+                <button
+                  onClick={undo}
+                  disabled={state.history.length <= 1}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm font-bold text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Undo last change"
+                >
+                  <RotateCcw size={16} /> <span className="hidden sm:inline">Undo</span>
+                </button>
+                <button
+                  onClick={downloadData}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-all shadow-sm active:scale-95 ml-2"
+                  title="Download CSV"
+                >
+                  <Download size={16} /> <span className="hidden sm:inline">Export CSV</span>
+                </button>
+              </>
+            )}
+            <div className="h-4 w-px bg-gray-200 mx-2"></div>
+            <div className="flex items-center gap-2">
+              <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email}`} alt="Avatar" className="w-8 h-8 rounded-full shadow-sm" />
+              <button onClick={handleLogout} className="p-2 text-gray-400 hover:bg-gray-100 hover:text-red-500 rounded-lg transition-colors" title="Log out">
+                <LogOut size={16} />
               </button>
             </div>
-          )}
+          </div>
         </div>
       </nav>
 

@@ -18,7 +18,6 @@ export function Stats({ df }: StatsProps) {
       nullCount = naSum.values.reduce((a: any, b: any) => (a as number) + (b as number), 0) as number;
     }
   } catch (e) {
-    // ignore
   }
 
   const statItems = [
