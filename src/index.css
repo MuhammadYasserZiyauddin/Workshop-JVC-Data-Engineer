@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #F5F5F5;
+  --card-bg: #FFFFFF;
+  --accent: #6366f1;
+  --text: #1a1a1a;
+  --text-muted: #6b7280;
+}
+
+body {
+  @apply bg-[#F5F5F5] text-[#1a1a1a] min-h-screen font-sans;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full hover:bg-gray-400 transition-colors;
+}
