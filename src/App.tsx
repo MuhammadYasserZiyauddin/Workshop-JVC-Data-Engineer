@@ -98,7 +98,7 @@ export default function App() {
         id: Math.random().toString(),
         description: 'Original Dataset loaded',
         timestamp: Date.now(),
-        dfSnapshot: df.copy()
+        dfSnapshot: df.copy() as any
       }],
       isLoading: false,
       error: null,
@@ -125,8 +125,9 @@ export default function App() {
     if (!state.df) return;
 
     try {
-      // @ts-expect-error eval uses this variable
+      // @ts-expect-error eval assigns this
       const df = state.df; 
+      // eslint-disable-next-line
       const processedDf = eval(suggestion.danfoCode);
 
       if (processedDf instanceof dfd.DataFrame) {
@@ -143,7 +144,7 @@ export default function App() {
         }));
         setAiState(prev => ({
           ...prev,
-          suggestions: prev.suggestions.filter(s => s.id !== suggestion.id)
+          suggestions: prev.suggestions.filter((s: AISuggestion) => s.id !== suggestion.id)
         }));
         setSearchState(prev => ({ ...prev, insight: null, query: '' }));
         triggerNarrativeUpdate(processedDf, currentChartConfig);
@@ -191,6 +192,7 @@ export default function App() {
         try {
           // @ts-expect-error eval uses this variable
           const df = state.df; 
+          // eslint-disable-next-line
           const result = eval(insight.filterCode);
           if (result instanceof dfd.DataFrame) {
             viewDf = result;
