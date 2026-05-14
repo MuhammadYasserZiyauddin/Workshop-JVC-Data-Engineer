@@ -11,20 +11,18 @@
   },
   "dependencies": {
     "@google/genai": "latest",
-    "@types/express": "^5.0.6",
     "clsx": "^2.1.0",
     "danfojs": "^1.1.2",
-    "esbuild": "^0.28.0",
-    "express": "^5.2.1",
+    "express": "latest",
     "lucide-react": "^0.359.0",
     "plotly.js": "^2.27.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-plotly.js": "^2.6.0",
-    "tailwind-merge": "^2.2.2",
-    "tsx": "^4.21.0"
+    "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
+    "@types/express": "latest",
     "@types/plotly.js": "^2.12.28",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
@@ -33,11 +31,13 @@
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
+    "esbuild": "latest",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.1",
+    "tsx": "latest",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   }
