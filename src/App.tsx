@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import * as dfjs from 'danfojs';
 import Plot from 'react-plotly.js';
 import { 
   Upload, Wand2, Database, BarChart3, AlertCircle, Undo2, Check, 
-  RefreshCw, Search, Download, Copy, Share2, Info, ArrowRight,
-  TrendingDown, TrendingUp
+  RefreshCw, Search, Download, Copy, Info, ArrowRight,
+  TrendingUp
 } from 'lucide-react';
 
 interface Suggestion {
@@ -193,7 +193,9 @@ export default function App() {
     if (!currentDf) return;
     setNarrativeLoading(true);
     let desc = {};
-    try { desc = currentDf.describe().toJSON(); } catch(e){}
+    try { desc = currentDf.describe().toJSON(); } catch(e){
+       // ignore
+    }
     
     const dataSummary = {
       shape: currentDf.shape,
@@ -250,7 +252,7 @@ export default function App() {
     }
 
     const { chartType, mappings, plotlyConfigLayout } = plotConfig;
-    let trace: any = { type: chartType };
+    const trace: any = { type: chartType };
 
     if (chartType === 'pie') {
       if (mappings.labelsColumn && viewDf.columns.includes(mappings.labelsColumn)) trace.labels = viewDf[mappings.labelsColumn].values;

@@ -70,7 +70,8 @@ ${JSON.stringify(sampleData, null, 2)}`
                 text: `You are a data visualization assistant. You have access to a Danfo.js DataFrame schema. Based on the user's natural language query, return a JSON object containing:
 - "filterCode": A string of Danfo.js code to subset/transform the data (e.g., 'df.query(df["price"].gt(100))'). If no filtering needed, return simply 'df'. Do NOT use assignment.
 - "chartType": The Plotly chart type (e.g., 'scatter', 'bar', 'pie').
-- "plotlyConfig": The 'data' and 'layout' objects for Plotly.js. Use placeholders like "{{xData}}" or "{{yData}}" for arrays that we will inject in the client, or suggest the column names to use. Actually, just provide the column names to map: { xColumn: 'col_name', yColumn: 'col_name', zColumn: 'col_name', colorColumn: 'col_name' }.
+- "mappings": provide the column names to map: { "xColumn": "col_name", "yColumn": "col_name", "valuesColumn": "col_name", "labelsColumn": "col_name" }.
+- "plotlyConfigLayout": The 'layout' object for Plotly.js.
 - "insight": A 1-sentence explanation of what the user is looking at.
 
 Return schema:
