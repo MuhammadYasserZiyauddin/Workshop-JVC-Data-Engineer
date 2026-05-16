@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
 
 async function startServer() {
   const app = express();
@@ -9,145 +8,45 @@ async function startServer() {
 
   app.use(express.json({ limit: "50mb" }));
 
-  // Initialize Gemini
-  const getAi = () => {
-    const key = process.env.GEMINI_API_KEY;
-    if (!key) throw new Error("GEMINI_API_KEY is not set.");
-    return new GoogleGenAI({ apiKey: key });
-  };
-
-  // Phase 2: Clean Suggest
+  // Phase 2: Clean Suggest (Mocked)
   app.post("/api/clean-suggest", async (req, res) => {
     try {
-      const { metadata, sampleData } = req.body;
-      const ai = getAi();
-      
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `You are a data cleaning expert. Based on this metadata, identify issues (missing values, duplicates, wrong types, outliers). Suggest specific Danfo.js operations to fix them. 
-Return the response in a structured JSON format matching this schema: 
-{ "suggestions": [{ "id": "string", "label": "string", "description": "string", "danfoCode": "string" }] }
-The "danfoCode" should be a single executable JavaScript statement assuming the dataframe is named "df" and it should return the modified dataframe. Example: "df.fillna({ columns: ['age'], values: [0] })" or "df.dropNa({ axis: 1 })". Do NOT use reassignment like "df = df.fillna(...)". Just return the expression. Make sure the danfo params are correct.
-
-Metadata:
-${JSON.stringify(metadata, null, 2)}
-
-Sample Data:
-${JSON.stringify(sampleData, null, 2)}`
-              }
-            ]
-          }
-        ],
-        config: { responseMimeType: "application/json" }
-      });
-      
-      const result = JSON.parse(response.text || "{}");
-      res.json(result);
+      res.json({ suggestions: [{ id: '1', label: 'AI Disabled', description: 'AI backend features are disabled to run without an API key.', danfoCode: 'df' }] });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to generate suggestions" });
     }
   });
 
-  // Phase 3: Vibe Search (Conversational EDA)
+  // Phase 3: Vibe Search (Mocked)
   app.post("/api/vibe-search", async (req, res) => {
     try {
-      const { query, schema } = req.body;
-      const ai = getAi();
-      
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `You are a data visualization assistant. You have access to a Danfo.js DataFrame schema. Based on the user's natural language query, return a JSON object containing:
-- "filterCode": A string of Danfo.js code to subset/transform the data (e.g., 'df.query(df["price"].gt(100))'). If no filtering needed, return simply 'df'. Do NOT use assignment.
-- "chartType": The Plotly chart type (e.g., 'scatter', 'bar', 'pie').
-- "mappings": provide the column names to map: { "xColumn": "col_name", "yColumn": "col_name", "valuesColumn": "col_name", "labelsColumn": "col_name" }.
-- "plotlyConfigLayout": The 'layout' object for Plotly.js.
-- "insight": A 1-sentence explanation of what the user is looking at.
-
-Return schema:
-{
-  "filterCode": "string",
-  "chartType": "string",
-  "mappings": { "xColumn": "string|null", "yColumn": "string|null", "valuesColumn": "string|null", "labelsColumn": "string|null" },
-  "plotlyConfigLayout": {},
-  "insight": "string"
-}
-
-User Query: "${query}"
-
-DataFrame Schema (Columns and Types):
-${JSON.stringify(schema, null, 2)}`
-              }
-            ]
-          }
-        ],
-        config: { responseMimeType: "application/json" }
+      res.json({
+        filterCode: 'df',
+        chartType: 'scatter',
+        mappings: {},
+        plotlyConfigLayout: {},
+        insight: 'AI search functionalities are currently turned off.'
       });
-
-      const result = JSON.parse(response.text || "{}");
-      res.json(result);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to process search query" });
     }
   });
 
-  // Phase 4: Narrative Insights
+  // Phase 4: Narrative Insights (Mocked)
   app.post("/api/narrative", async (req, res) => {
     try {
-      const { dataSummary, chartDetails } = req.body;
-      const ai = getAi();
-      
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: `Analyze the following data summary and the current chart configuration. Write exactly 3 bullet points in a professional yet conversational tone:
-1. **The Vibe**: A high-level summary of the trend.
-2. **The Outlier**: Identify one interesting anomaly or peak.
-3. **The Action**: Suggest one business or personal decision based on this data.
-
-Also determine if there is an urgent/warning recommendation (e.g., downward trend, high missing values).
-
-Return JSON schema:
-{
-  "vibe": "string",
-  "outlier": "string",
-  "action": "string",
-  "recommendationOverlay": {
-    "show": boolean,
-    "type": "warning" | "success" | "info",
-    "message": "string"
-  }
-}
-
-Data Summary:
-${JSON.stringify(dataSummary, null, 2)}
-
-Chart Details:
-${JSON.stringify(chartDetails, null, 2)}`
-              }
-            ]
-          }
-        ],
-        config: { responseMimeType: "application/json" }
+      res.json({
+        vibe: "AI Disabled Mode",
+        outlier: "AI backend has been removed.",
+        action: "Deploy the app seamlessly without needing API keys.",
+        recommendationOverlay: {
+          show: true,
+          type: "info",
+          message: "AI capabilities have been disabled on the backend. This component continues to function smoothly with default data."
+        }
       });
-
-      const result = JSON.parse(response.text || "{}");
-      res.json(result);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to generate narrative" });
